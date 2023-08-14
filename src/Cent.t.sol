@@ -1,9 +1,7 @@
 // SPDX-License-Identifier: MIT
 pragma solidity 0.8.19;
 
-import {Test} from "forge-std/Test.sol";
-import {console2} from "forge-std/console2.sol";
-
+import {Test, console2} from "forge-std/Test.sol";
 import {CenturionDai} from "./Cent.sol";
 
 //CenturionDai test
@@ -27,7 +25,7 @@ contract CenturionDaiTest is Test {
     function testBalance() public {
         uint256 supposedBalance = 1000 * uint256(10**template.decimals());
         uint256 balance = template.balanceOf(sender);
-        console2.log("Balances: %s - %s", supposedBalance, balance);
+        console2.log("Balances: %d - %d", supposedBalance, balance);
         assertEq(supposedBalance, balance);
     }
 }
