@@ -1,8 +1,8 @@
 // SPDX-License-Identifier: MIT
 pragma solidity 0.8.19;
 
-import "forge-std/Script.sol";
-import "./Cent.sol";
+import {Script} from "forge-std/Script.sol";
+import {CenturionDai} from "./Cent.sol";
 
 contract CenturionDaiDeploy is Script {
     function run() external returns (CenturionDai) {

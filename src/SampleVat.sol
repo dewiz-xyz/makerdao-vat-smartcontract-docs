@@ -1,6 +1,9 @@
 // SPDX-License-Identifier: MIT
 pragma solidity 0.8.19;
 
-import "dss/vat.sol";
+import {Vat} from "dss/vat.sol";
 
-contract SampleVat is Vat {}
+// solhint-disable-next-line
+contract SampleVat is Vat {
+
+}
