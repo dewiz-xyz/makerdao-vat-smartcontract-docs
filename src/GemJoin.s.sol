@@ -5,6 +5,7 @@ import {Script, console2} from "forge-std/Script.sol";
 import {GemJoin} from "dss/join.sol";
 import {RegistryUtil} from "./ScriptUtil.sol";
 import {Registry} from "./Registry.sol";
+import {Denarius} from "./Denarius.sol";
 
 //  ./scripts/forge-script.sh ./src/GemJoin.s.sol:GemJoinDeploy --fork-url=$RPC_URL --broadcast -vvvv
 contract GemJoinDeploy is Script {
@@ -18,11 +19,13 @@ contract GemJoinDeploy is Script {
         }
         Registry registry = Registry(registryAddress);
         address vat = registry.lookUp("SampleVat");
-        address denarius = registry.lookUp("Denarius");
+        address denariusAddr = registry.lookUp("Denarius");
 
-        GemJoin tpl = new GemJoin(vat, "Denarius-A", denarius);
-
+        GemJoin tpl = new GemJoin(vat, "Denarius-A", denariusAddr);
         registry.setContractAddress("GemJoin", address(tpl));
+
+        Denarius denarius = Denarius(denariusAddr);
+        denarius.approve(denariusAddr, type(uint256).max);
 
         vm.stopBroadcast();
     }
