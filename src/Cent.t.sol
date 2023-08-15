@@ -6,12 +6,13 @@ import {CenturionDai} from "./Cent.sol";
 
 //CenturionDai test
 contract CenturionDaiTest is Test {
-    CenturionDai internal template;
+    CenturionDai internal _dai;
     address public sender;
 
     function setUp() public {
         sender = address(0x7FA9385bE102ac3EAc297483Dd6233D62b3e1496);
-        template = new CenturionDai();
+        _dai = new CenturionDai();
+        _dai.mint(sender, 1000 * uint256(10**_dai.decimals()));
     }
 
     function testFailBasicSanity() public {
@@ -23,8 +24,8 @@ contract CenturionDaiTest is Test {
     }
 
     function testBalance() public {
-        uint256 supposedBalance = 1000 * uint256(10**template.decimals());
-        uint256 balance = template.balanceOf(sender);
+        uint256 supposedBalance = 1000 * uint256(10**_dai.decimals());
+        uint256 balance = _dai.balanceOf(sender);
         console2.log("Balances: %d - %d", supposedBalance, balance);
         assertEq(supposedBalance, balance);
     }
