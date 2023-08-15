@@ -4,3 +4,5 @@ test = 'src'
 out = 'out'
 libs = ['lib']
 optimizer = false
+
+fs_permissions = [{ access = "read-write", path = "./" }]
