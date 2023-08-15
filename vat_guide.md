@@ -41,7 +41,7 @@ Example:
 
 ### Deploy your ERC-20 token `$DENARIUS`
 
-0. Deploy an ERC-20 that you control
+Deploy an ERC-20 that you control
 
 Example:
 
@@ -51,17 +51,27 @@ Example:
 
 ### Deploy `GemJoin`
 
-0. Deploy a `GemJoin` contract from `join.sol`
-   ```solidity
-   GemJoin(address vat, bytes32 ilk, address gem)
-   ```
-   - `vat`: `<vat_addr>`
-   - `ilk`: `'CENT-A'`
-   - `gem`: `$CENT` ERC20 token address
+Deploy a `GemJoin` contract from `join.sol`
+
+```solidity
+GemJoin(address vat, bytes32 ilk, address gem)
+```
+
+Where:
+
+- `vat`: `<vat_addr>`
+- `ilk`: `'CENT-A'`
+- `gem`: `$CENT` ERC20 token address
+
+Example:
+
+```bash
+./scripts/forge-script.sh ./src/GemJoin.s.sol:GemJoinDeploy --fork-url=$RPC_URL --broadcast -vvvv
+```
 
 ### Deploy your own "Dai" token `$DAI`
 
-0. Deploy an ERC-20 that you control
+Deploy an ERC-20 that you control
 
 Example:
 
@@ -69,13 +79,14 @@ Example:
 ./scripts/forge-script.sh ./src/Cent.s.sol:CenturionDaiDeploy --fork-url=$RPC_URL --broadcast -vvvv
 ```
 
-## Authorize the contracts on the `Vat`:
+### Authorize the contracts on the `Vat`
 
-0. `rely` on both join contracts:
-   ```solidity
-   vat.rely(<gem_join_addr>);
-   vat.rely(<dai_join_addr>);
-   ```
+`rely` on both join contracts:
+
+```solidity
+vat.rely(<gem_join_addr>);
+vat.rely(<dai_join_addr>);
+```
 
 ## Deploy `DaiJoin`
 

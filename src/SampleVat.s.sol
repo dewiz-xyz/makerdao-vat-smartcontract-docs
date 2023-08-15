@@ -26,3 +26,26 @@ contract SampleVatDeploy is Script {
         return tpl;
     }
 }
+
+//  ./scripts/forge-script.sh ./src/SampleVat.s.sol:SampleVatInitialize --fork-url=$RPC_URL --broadcast -vvvv
+contract SampleVatInitialize is Script {
+    function run() external {
+        vm.startBroadcast();
+        Registry registry;
+        (bool success, address registryAddress) = RegistryUtil.getRegistryAddress();
+        if (!success) {
+            console2.log("Error creating new Registry instance!");
+            revert();
+        }
+        registry = Registry(registryAddress);
+        address vatAddress = registry.lookUp("SampleVat");
+        address gemjoin = registry.lookUp("GemJoin");
+        address dai = registry.lookUp("CenturionDai");
+
+        SampleVat vat = SampleVat(vatAddress);
+        vat.rely(gemjoin);
+        vat.rely(dai);
+
+        vm.stopBroadcast();
+    }
+}
