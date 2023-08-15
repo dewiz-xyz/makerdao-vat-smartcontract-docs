@@ -8,7 +8,7 @@ import {Ownable} from "openzeppelin/access/Ownable.sol";
 
 contract Denarius is ERC20, ERC20Burnable, Ownable, ERC20Permit {
     constructor() ERC20("Denarius", "SPQR") ERC20Permit("Denarius") {
-        _mint(msg.sender, 1 * 10**decimals());
+        _mint(msg.sender, 1000 * 10**decimals());
     }
 
     function mint(address to, uint256 amount) public onlyOwner {
