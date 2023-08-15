@@ -1,12 +1,18 @@
-# Minimal `Vat` setup
+# Maker DAO VAT Smart Contract
 
-## Setup localchain using GETH
+Project to explain Maker DAO VAT Smart Contract and how to setup and interact with it.
+
+## Minimal `Vat` setup
+
+In order to run this project to understand the Maker DAO VAT Smart Contract and its operation you need to perform the setup below.
+
+### Setup localchain using GETH
 
 ```bash
 geth --datadir ~/.temp/ --dev --http --http.api web3,eth,debug,net --http.corsdomain "*" --http.vhosts "*" --http.addr 127.0.0.1 --ws --ws.api eth,net,debug,web3 --ws.addr 127.0.0.1 --ws.origins "*" --graphql --graphql.corsdomain "*" --graphql.vhosts "*" --vmdebug
 ```
 
-## Setup local environment variables
+### Setup local environment variables
 
 export ETH_FROM=0x
 export FOUNDRY_ETH_FROM=$ETH_FROM
@@ -17,7 +23,13 @@ export FOUNDRY_ETH_KEYSTORE_DIR=$ETH_KEYSTORE
 export ETH_PASSWORD="$ETH_KEYSTORE/passwd.txt"
 export FOUNDRY_ETH_PASSWORD_FILE=$ETH_PASSWORD
 
-## Deploy `Vat`
+### Setup auxiliary tooling
+
+Make sure you have node, shfmt and foundry installed.
+
+## Deploying artifacts
+
+### Deploy `Vat`
 
 0. Deploy `Vat` from `vat.sol`
 
@@ -27,7 +39,7 @@ Example:
 ./scripts/forge-script.sh ./src/SampleVat.s.sol:SampleVatDeploy --fork-url=$RPC_URL --broadcast -vvvv
 ```
 
-## Deploy your ERC-20 token `$DENARIUS`
+### Deploy your ERC-20 token `$DENARIUS`
 
 0. Deploy an ERC-20 that you control
 
@@ -37,7 +49,7 @@ Example:
 ./scripts/forge-script.sh ./src/Denarius.s.sol:DenariusDeploy --fork-url=$RPC_URL --broadcast -vvvv
 ```
 
-## Deploy `GemJoin`
+### Deploy `GemJoin`
 
 0. Deploy a `GemJoin` contract from `join.sol`
    ```solidity
@@ -47,7 +59,7 @@ Example:
    - `ilk`: `'CENT-A'`
    - `gem`: `$CENT` ERC20 token address
 
-## Deploy your own "Dai" token `$DAI`
+### Deploy your own "Dai" token `$DAI`
 
 0. Deploy an ERC-20 that you control
 
