@@ -88,16 +88,35 @@ vat.rely(<gem_join_addr>);
 vat.rely(<dai_join_addr>);
 ```
 
-## Deploy `DaiJoin`
+### Deploy `DaiJoin`
 
-0. Deploy a `DaiJoin` contract from `join.sol`
-   ```solidity
-   DaiJoin(address vat, address dai)
-   ```
-   - `vat`: `<vat_addr>`
-   - `gem`: `$MYDAI` ERC20 token address
-1. Allow `DaiJoin` to **mint** `$MYDAI`
-1. Allow `DaiJoin` to **burn** `$MYDAI`
+Deploy a `DaiJoin` contract from `join.sol`
+
+```solidity
+DaiJoin(address vat, address dai)
+```
+
+Where:
+
+- `vat_`: `<vat_addr>`
+- `dai_`: `$DAI` ERC20 token address
+
+Example:
+
+```bash
+./scripts/forge-script.sh ./src/DaiJoin.s.sol:DaiJoinDeploy --fork-url=$RPC_URL --broadcast -vvvv
+```
+
+Then:
+
+1. Allow `DaiJoin` to **mint** `$DAI`
+2. Allow `DaiJoin` to **burn** `$DAI`
+
+Example:
+
+```bash
+./scripts/forge-script.sh ./src/DaiJoin.s.sol:DaiJoinReceiveAllowance --fork-url=$RPC_URL --broadcast -vvvv
+```
 
 ## Initialize the collateral type
 
