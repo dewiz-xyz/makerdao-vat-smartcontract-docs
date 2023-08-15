@@ -45,6 +45,10 @@ contract SampleVatInitialize is Script {
         SampleVat vat = SampleVat(vatAddress);
         vat.rely(gemjoin);
         vat.rely(dai);
+        vat.init("Denarius-A");
+        vat.file("Line", 1_000_000 * 10**45);
+        vat.file("Denarius-A", "line", 1_000_000 * 10**45);
+        vat.file("Denarius-A", "spot", 1 * 10**27);
 
         vm.stopBroadcast();
     }
