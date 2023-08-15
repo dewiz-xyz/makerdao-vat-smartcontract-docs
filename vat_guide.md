@@ -31,7 +31,7 @@ Make sure you have node, shfmt and foundry installed.
 
 ### Deploy `Vat`
 
-0. Deploy `Vat` from `vat.sol`
+Deploy `Vat` from `vat.sol`
 
 Example:
 
@@ -51,17 +51,18 @@ Example:
 
 ### Deploy `GemJoin`
 
-Deploy a `GemJoin` contract from `join.sol`
+Deploy a `GemJoin` contract from `join.sol` and allow it to spend your collateral
 
 ```solidity
-GemJoin(address vat, bytes32 ilk, address gem)
+GemJoin(address vat, bytes32 ilk, address gem);
+denarius.approve(address(gemJoin), type(uint256).max);
 ```
 
 Where:
 
 - `vat`: `<vat_addr>`
-- `ilk`: `'CENT-A'`
-- `gem`: `$CENT` ERC20 token address
+- `ilk`: `'Denarius-A'`
+- `gem`: `$DENARIUS` ERC20 token address
 
 Example:
 
@@ -77,15 +78,6 @@ Example:
 
 ```bash
 ./scripts/forge-script.sh ./src/Cent.s.sol:CenturionDaiDeploy --fork-url=$RPC_URL --broadcast -vvvv
-```
-
-### Authorize the contracts on the `Vat`
-
-`rely` on both join contracts:
-
-```solidity
-vat.rely(<gem_join_addr>);
-vat.rely(<dai_join_addr>);
 ```
 
 ### Deploy `DaiJoin`
@@ -118,59 +110,84 @@ Example:
 ./scripts/forge-script.sh ./src/DaiJoin.s.sol:DaiJoinReceiveAllowance --fork-url=$RPC_URL --broadcast -vvvv
 ```
 
-## Initialize the collateral type
+### `Vat` initialization
 
-1. Initialize Vat for `CENT-A`
-   ```solidity
-   vat.init('CENT-A');
-   ```
-2. Set the global debt ceiling `Line` (with capital `L`)
-   ```solidity
-   vat.file('Line', 1_000_000 * 10**45); // RAD: 45 decimals
-   ```
-3. Set collateral debt ceiling `line` (with lower `l`)
-   ```solidity
-   vat.file('CENT-A', 'line', 1_000_000 * 10**45); // RAD: 45 decimals
-   ```
-4. Set collateral price (`spot`)
-   ```solidity
-   vat.file('CENT-A', 'spot', 1 * 10**27) // RAY: 27 decimals
-   ```
-   - This makes so 1 `$CENT` = 1 `DAI` and that the collateralization ratio is 100%
+Authorize the contracts on the `Vat`, initialize it, set the global debt ceiling, set collateral debt ceiling, and set collateral price
 
-## Borrow `$MYDAI` from `$CENT`
+`rely` on both join contracts
 
-1. Approve `GemJoin` to spend your `$CENT`
-   ```solidity
-   cent.approve(<gem_join_addr>, type(uint256).max);
-   ```
-2. Add your `$CENT` to the protocol by calling `GemJoin.join()`:
-   ```solidity
-   gemJoin.join(<your_addr>, <amount>); // <amount> with 10**18 precision
-   ```
-   - This will add collateral to the system, but it will remain **unemcumbered** (not locked).
-3. Draw internal `dai` from the `Vat` using `frob()`:
-   ```solidity
+```solidity
+vat.rely(<gem_join_addr>);
+vat.rely(<dai_join_addr>);
+vat.init(<bond-or-collateral-name>);
+vat.file('Line', 1_000_000 * 10**45); // RAD: 45 decimals
+vat.file('CENT-A', 'line', 1_000_000 * 10**45); // RAD: 45 decimals
+vat.file('CENT-A', 'spot', 1 * 10**27) // RAY: 27 decimals
+```
+
+Example:
+
+```bash
+./scripts/forge-script.sh ./src/SampleVat.s.sol:SampleVatInitialize --fork-url=$RPC_URL --broadcast -vvvv
+```
+
+### Below explanation about the debt/collateral definitions in `VAT`
+
+#### Set the global debt ceiling using `Line` (with capital `L`)
+
+```solidity
+vat.file('Line', 1_000_000 * 10**45); // RAD: 45 decimals
+```
+
+#### Set collateral debt ceiling `line` (with lower `l`)
+
+```solidity
+vat.file('Denarius-A', 'line', 1_000_000 * 10**45); // RAD: 45 decimals
+```
+
+#### Set collateral price (`spot`)
+
+```solidity
+vat.file('Denarius-A', 'spot', 1 * 10**27) // RAY: 27 decimals
+```
+
+This makes so 1 `$DENARIUS` = 1 `DAI` and that the collateralization ratio is 100%
+
+## Borrow `$DAI` using `$DENARIUS`
+
+### Add your `$DENARIUS` to the protocol by calling `GemJoin.join()`
+
+```solidity
+gemJoin.join(<your_addr>, <amount>); // <amount> with 10**18 precision
+```
+
+This will add collateral to the system, but it will remain **unemcumbered** (not locked). The next step is to draw internal `dai` from the `Vat` using `frob()`:
+
+```solidity
    vat.frob(
-       'CENT-A', // ilk
+       'Denarius-A', // ilk
        <your_wallet>,
        <your_wallet>,
        <your_wallet>, // To keep it simple, use your address for both `u`, `v` and `w`
        int dink, // with 10**18 precision
        int dart // with 10**18 precision
    )
-   ```
-   - `dink`: how much collateral to lock(+)/unlock(-)
-     - Collateral is now **encumbered** (locked) into the system.
-   - `dart`: how much **normalized debt** to add(+)/remove(-)
-     - Remember that `debt = ilk.rate * urn.art`
-     - To get the value for `dart`, divide the desired amount by `ilk.rate` (this is a floating point division, which can be tricky)
-       - See the [RwaUrn](https://github.com/makerdao/rwa-toolkit/blob/8d30ed2cb657641253d45b57c894613e26b4ae1b/src/urns/RwaUrn.sol#L156-L178) component to understand how it can be done
-   - Recommendation: respect `dink = dart/2` when drawing
-4. Get ERC-20 `$MYDAI`
-   ```solidity
-   daiJoin.exit(<your_wallet>, <amount>); // <amount> with 10**18 precision
-   ```
+```
+
+- `dink`: how much collateral to lock(+)/unlock(-)
+- Collateral is now **encumbered** (locked) into the system.
+- `dart`: how much **normalized debt** to add(+)/remove(-)
+- Remember that `debt = ilk.rate * urn.art`
+- To get the value for `dart`, divide the desired amount by `ilk.rate` (this is a floating point division, which can be tricky)
+- See the [RwaUrn](https://github.com/makerdao/rwa-toolkit/blob/8d30ed2cb657641253d45b57c894613e26b4ae1b/src/urns/RwaUrn.sol#L156-L178) component to understand
+  how it can be done
+- Recommendation: respect `dink = dart/2` when drawing
+
+### Get ERC-20 `$MYDAI`
+
+```solidity
+daiJoin.exit(<your_wallet>, <amount>); // <amount> with 10**18 precision
+```
 
 ## Repay your loan to get `$CENT` back
 
