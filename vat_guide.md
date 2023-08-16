@@ -103,6 +103,8 @@ Then:
 
 1. Allow `DaiJoin` to **mint** `$DAI`
 2. Allow `DaiJoin` to **burn** `$DAI`
+3. Give Hope (permission) to `DaiJoin` operates moves `$DAI` for you within `Vat`
+4. Make `$DAI` to rely on `DaiJoin`
 
 Example:
 
@@ -147,11 +149,13 @@ vat.file('Denarius-A', 'line', 1_000_000 * 10**45); // RAD: 45 decimals
 
 #### Set collateral price (`spot`)
 
+Spot defines the collateral price within the `Vat`
+
 ```solidity
 vat.file('Denarius-A', 'spot', 1 * 10**27) // RAY: 27 decimals
 ```
 
-This makes so 1 `$DENARIUS` = 1 `DAI` and that the collateralization ratio is 100%
+In the above example, it makes `$DENARIUS` price equals `DAI` price ( 1 to 1 ).
 
 ## Borrow `$DAI` using `$DENARIUS`
 
@@ -174,14 +178,10 @@ This will add collateral to the system, but it will remain **unemcumbered** (not
    )
 ```
 
-- `dink`: how much collateral to lock(+)/unlock(-)
-- Collateral is now **encumbered** (locked) into the system.
-- `dart`: how much **normalized debt** to add(+)/remove(-)
-- Remember that `debt = ilk.rate * urn.art`
-- To get the value for `dart`, divide the desired amount by `ilk.rate` (this is a floating point division, which can be tricky)
-- See the [RwaUrn](https://github.com/makerdao/rwa-toolkit/blob/8d30ed2cb657641253d45b57c894613e26b4ae1b/src/urns/RwaUrn.sol#L156-L178) component to understand
-  how it can be done
-- Recommendation: respect `dink = dart/2` when drawing
+- `dink`: how much collateral to lock(+ add ) or unlock(- sub) within `Vat`. It means the collateral is now **encumbered** (locked) into the system.
+- `dart`: how much **normalized debt** to add(+)/remove(-). Remember that `debt = ilk.rate * urn.art` . To get the value for `dart`, divide the desired amount
+  by `ilk.rate` (this is a floating point division, which can be tricky). See the [RwaUrn](https://github.com/makerdao/rwa-toolkit/blob/8d30ed2cb657641253d45b57c894613e26b4ae1b/src/urns/RwaUrn.sol#L156-L178) component to understand how it can be done
+- Recommendation: respect `dink = dart*2` when calling `vat.frob` for drawing to make the collateralization rate in 200%.
 
 ### Get ERC-20 `$MYDAI`
 
