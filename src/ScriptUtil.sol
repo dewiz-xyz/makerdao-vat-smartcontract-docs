@@ -4,6 +4,18 @@ pragma solidity 0.8.19;
 import {Vm} from "forge-std/Vm.sol";
 import {Registry} from "./Registry.sol";
 
+library Numbers {
+    function numDigits(int256 number) public returns (uint8) {
+        uint8 digits = 0;
+        //if (number < 0) digits = 1; // enable this line if '-' counts as a digit
+        while (number != 0) {
+            number /= 10;
+            digits++;
+        }
+        return digits;
+    }
+}
+
 library RegistryUtil {
     Vm private constant vm = Vm(address(uint160(uint256(keccak256("hevm cheat code")))));
 

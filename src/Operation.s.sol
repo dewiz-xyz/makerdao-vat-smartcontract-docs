@@ -3,7 +3,7 @@ pragma solidity 0.8.19;
 
 import {Script, console2} from "forge-std/Script.sol";
 import {SampleVat} from "./SampleVat.sol";
-import {RegistryUtil} from "./ScriptUtil.sol";
+import {RegistryUtil, Numbers} from "./ScriptUtil.sol";
 import {Registry} from "./Registry.sol";
 import {CenturionDai} from "./Cent.sol";
 import {Denarius} from "./Denarius.sol";
@@ -17,6 +17,9 @@ contract Setup is Script {
     Denarius public denarius;
     GemJoin public gemJoin;
     DaiJoin public daiJoin;
+
+    uint256 constant _RAY = 10**27;
+    uint256 constant _RAYDECIMALS = 27;
 
     function run() external {
         vm.startBroadcast();
@@ -66,13 +69,15 @@ contract Setup is Script {
     }
 
     function _vatInitialization() internal {
+        uint256 price = 616;
+        uint256 numDigitsBelowOneAndPositive = 2;
         vat.rely(address(gemJoin));
         vat.rely(address(dai));
         vat.init("Denarius-A");
         vat.file("Line", 1_000_000 * 10**45);
         vat.file("Denarius-A", "line", 1_000_000 * 10**45);
-        vat.file("Denarius-A", "spot", 1 * 10**27);
-        //vat.file("Denarius-A", "spot", 6500000000000000000000000000); //Actual price of MATIC 2023-08-16
+        // vat.file("Denarius-A", "spot", 1 * 10**27);
+        vat.file("Denarius-A", "spot", price * 10**(_RAYDECIMALS - numDigitsBelowOneAndPositive)); //Actual price of MATIC 2023-08-16 - 0.616 USD
     }
 }
 

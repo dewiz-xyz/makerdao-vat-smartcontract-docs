@@ -123,8 +123,8 @@ vat.rely(<gem_join_addr>);
 vat.rely(<dai_join_addr>);
 vat.init(<bond-or-collateral-name>);
 vat.file('Line', 1_000_000 * 10**45); // RAD: 45 decimals
-vat.file('CENT-A', 'line', 1_000_000 * 10**45); // RAD: 45 decimals
-vat.file('CENT-A', 'spot', 1 * 10**27) // RAY: 27 decimals
+vat.file('Denarius-A', 'line', 1_000_000 * 10**45); // RAD: 45 decimals
+vat.file('Denarius-A', 'spot', 1 * 10**27) // RAY: 27 decimals
 ```
 
 Example:
