@@ -61,6 +61,8 @@ contract Setup is Script {
         daiJoin = new DaiJoin(address(vat), address(dai));
         registry.setContractAddress("DaiJoin", address(daiJoin));
         dai.approve(address(daiJoin), type(uint256).max);
+        dai.rely(address(daiJoin));
+        vat.hope(address(daiJoin));
     }
 
     function _vatInitialization() internal {
@@ -70,6 +72,7 @@ contract Setup is Script {
         vat.file("Line", 1_000_000 * 10**45);
         vat.file("Denarius-A", "line", 1_000_000 * 10**45);
         vat.file("Denarius-A", "spot", 1 * 10**27);
+        //vat.file("Denarius-A", "spot", 6500000000000000000000000000); //Actual price of MATIC 2023-08-16
     }
 }
 
@@ -100,8 +103,8 @@ contract Borrow is Script {
     }
 
     function run() external {
-        uint256 valueToLock = 10 * 10**18;
-        uint256 valueToDrawInDai = 2 * 10**18;
+        uint256 valueToLock = 12 * 10**18;
+        uint256 valueToDrawInDai = 5 * 10**18;
 
         vm.startBroadcast();
 
@@ -123,7 +126,7 @@ contract Borrow is Script {
         (, uint256 rate, , , ) = vat.ilks("Denarius-A");
         uint256 dart = _divup(_mul(_RAY, valueToDrawInDai), rate);
         require(dart <= 2**255 - 1, "RwaUrn/overflow");
-        uint256 dink = dart / 2;
+        uint256 dink = dart * 2;
 
         vat.frob(
             "Denarius-A", // ilk
@@ -136,6 +139,7 @@ contract Borrow is Script {
 
         daiJoin.exit(msg.sender, valueToDrawInDai);
 
+        console2.log("dink: %d - dart: %d", dink, dart);
         console2.log("After - I am %s and my balance in Dai: %s", msg.sender, dai.balanceOf(msg.sender));
 
         vm.stopBroadcast();
