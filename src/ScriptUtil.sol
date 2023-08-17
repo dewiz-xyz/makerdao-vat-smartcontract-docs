@@ -22,6 +22,26 @@ library Numbers {
     ) public pure returns (uint256) {
         return value * 10**(decimals - numDigitsBelowOneAndPositive);
     }
+
+    function add(uint256 x, uint256 y) internal pure returns (uint256 z) {
+        require((z = x + y) >= x);
+    }
+
+    function sub(uint256 x, uint256 y) internal pure returns (uint256 z) {
+        require((z = x - y) <= x);
+    }
+
+    function mul(uint256 x, uint256 y) internal pure returns (uint256 z) {
+        require(y == 0 || (z = x * y) / y == x);
+    }
+
+    function divup(uint256 x, uint256 y) internal pure returns (uint256 z) {
+        z = add(x, sub(y, 1)) / y;
+    }
+
+    function ray() public pure returns (uint256) {
+        return 10**27;
+    }
 }
 
 library RegistryUtil {
