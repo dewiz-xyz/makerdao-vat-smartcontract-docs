@@ -183,40 +183,39 @@ This will add collateral to the system, but it will remain **unemcumbered** (not
   by `ilk.rate` (this is a floating point division, which can be tricky). See the [RwaUrn](https://github.com/makerdao/rwa-toolkit/blob/8d30ed2cb657641253d45b57c894613e26b4ae1b/src/urns/RwaUrn.sol#L156-L178) component to understand how it can be done
 - Recommendation: respect `dink = dart*2` when calling `vat.frob` for drawing to make the collateralization rate in 200%.
 
-### Get ERC-20 `$MYDAI`
+### Get ERC-20 `$DAI`
 
 ```solidity
 daiJoin.exit(<your_wallet>, <amount>); // <amount> with 10**18 precision
 ```
 
-## Repay your loan to get `$CENT` back
+### Repay your loan to get `$DENARIUS` back
 
-1. Approve `DaiJoin` to spend your `$MYDAI`
-   ```solidity
-   dai.approve(<dai_join_addr>, type(uint256).max);
-   ```
-2. Add your `$MYDAI` to the protocol by calling `DaiJoin.join()`:
-   ```solidity
-   daiJoin.join(<your_addr>, <amount>); // <amount> with 10**18 precision
-   ```
-   - This will burn ERC-20 `$MYDAI` and add it to `<your_addr>` internal balance on the `Vat`.
-3. Repay internal `dai` in the `Vat` using `frob()`:
-   ```solidity
-   vat.frob(
-       'CENT-A', // ilk
-       <your_wallet>,
-       <your_wallet>,
-       <your_wallet>, // To keep it simple, use your address for both `u`, `v` and `w`
-       int dink, // with 10**18 precision
-       int dart // with 10**18 precision
-   )
-   ```
-   - `dink`: how much collateral to unlock. **MUST BE NEGATIVE**
-     - Collateral is now **uncumbered** (unlocked), but still in the system.
-   - `dart`: how much **normalized debt** to remove. **MUST BE NEGATIVE**
-     - Remember that `debt = ilk.rate * urn.art`
-     - To get the value for `dart`, divide the desired amount by `ilk.rate` (this is a floating point division, which can be tricky)
-       - See the [RwaUrn](https://github.com/makerdao/rwa-toolkit/blob/8d30ed2cb657641253d45b57c894613e26b4ae1b/src/urns/RwaUrn.sol#L156-L178) component to understand how it can be done
+1. Add your `$DAI` to the protocol by calling `DaiJoin.join()`:
+
+```solidity
+daiJoin.join(<your_addr>, <amount>); // <amount> with 10**18 precision
+```
+
+This will burn ERC-20 `$DAI` and add it to `<your_addr>` internal balance on the `Vat`.
+
+2. Repay internal `dai` in the `Vat` using `frob()`:
+
+```solidity
+vat.frob(
+      'CENT-A', // ilk
+      <your_wallet>,
+      <your_wallet>,
+      <your_wallet>, // To keep it simple, use your address for both `u`, `v` and `w`
+      int dink, // with 10**18 precision
+      int dart // with 10**18 precision
+)
+```
+
+- `dink`: how much collateral to unlock. **MUST BE NEGATIVE**. Collateral is now **uncumbered** (unlocked), but still in the system.
+- `dart`: how much **normalized debt** to remove. **MUST BE NEGATIVE**. Remember that `debt = ilk.rate * urn.art` . To get the value for `dart`, divide the desired amount by `ilk.rate` (this is a floating point division, which can be tricky)
+- See the [RwaUrn](https://github.com/makerdao/rwa-toolkit/blob/8d30ed2cb657641253d45b57c894613e26b4ae1b/src/urns/RwaUrn.sol#L156-L178) component to understand how it can be done
+
 4. Get your `$CENT` back:
    ```solidity
    gemJoin.exit(<your_wallet>, <amount>); // <amount> with 10**18 precision
