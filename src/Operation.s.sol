@@ -69,8 +69,8 @@ contract Setup is Script {
     }
 
     function _vatInitialization() internal {
-        uint256 price = 616;
-        uint256 numDigitsBelowOneAndPositive = 2;
+        uint256 price = 1;
+        uint256 numDigitsBelowOneAndPositive = 0;
         vat.rely(address(gemJoin));
         vat.rely(address(dai));
         vat.init("Denarius-A");
@@ -89,23 +89,6 @@ contract Borrow is Script {
     Denarius public denarius;
     GemJoin public gemJoin;
     DaiJoin public daiJoin;
-    uint256 constant _RAY = 10**27;
-
-    function _add(uint256 x, uint256 y) internal pure returns (uint256 z) {
-        require((z = x + y) >= x);
-    }
-
-    function _sub(uint256 x, uint256 y) internal pure returns (uint256 z) {
-        require((z = x - y) <= x);
-    }
-
-    function _mul(uint256 x, uint256 y) internal pure returns (uint256 z) {
-        require(y == 0 || (z = x * y) / y == x);
-    }
-
-    function _divup(uint256 x, uint256 y) internal pure returns (uint256 z) {
-        z = _add(x, _sub(y, 1)) / y;
-    }
 
     function run() external {
         uint256 valueToLock = 12 * 10**18;
@@ -129,7 +112,7 @@ contract Borrow is Script {
         gemJoin.join(msg.sender, valueToLock);
 
         (, uint256 rate, , , ) = vat.ilks("Denarius-A");
-        uint256 dart = _divup(_mul(_RAY, valueToDrawInDai), rate);
+        uint256 dart = Numbers.divup(Numbers.mul(Numbers.ray(), valueToDrawInDai), rate);
         require(dart <= 2**255 - 1, "RwaUrn/overflow");
         uint256 dink = dart * 2;
 
@@ -151,6 +134,46 @@ contract Borrow is Script {
     }
 }
 
+contract PayBack is Script {
+    uint256 constant _VALUE_TO_PAYBACK = 2 * 10**18;
+
+    function run() external {
+        vm.startBroadcast();
+
+        (bool success, address registryAddress) = RegistryUtil.getRegistryAddress();
+        if (!success) {
+            console2.log("Error creating new Registry instance!");
+            revert();
+        }
+        Registry registry = Registry(registryAddress);
+        // gemJoin = GemJoin(registry.lookUp("GemJoin"));
+        SampleVat vat = SampleVat(registry.lookUp("SampleVat"));
+        CenturionDai dai = CenturionDai(registry.lookUp("CenturionDai"));
+        Denarius denarius = Denarius(registry.lookUp("Denarius"));
+        DaiJoin daiJoin = DaiJoin(registry.lookUp("DaiJoin"));
+
+        daiJoin.join(msg.sender, _VALUE_TO_PAYBACK);
+        (, uint256 rate, , , ) = vat.ilks("Denarius-A");
+        uint256 dart = Numbers.mul(Numbers.ray(), _VALUE_TO_PAYBACK) / rate;
+        uint256 dink = dart * 2;
+        require(dart <= 2**255 && dart <= 2**255, "RwaUrn/overflow");
+
+        vat.frob("Denarius-A", msg.sender, msg.sender, msg.sender, -int256(dink), -int256(dart));
+
+        console2.log("dink: %d - dart: %d", dink, dart);
+
+        uint256 cBalance = dai.balanceOf(msg.sender);
+        uint256 cEtherFormat = cBalance / (1 * 10**18);
+        console2.log("Dai balance: %d - %d", cEtherFormat, cBalance);
+
+        uint256 dBalance = denarius.balanceOf(msg.sender);
+        uint256 dEtherFormat = dBalance / (1 * 10**18);
+        console2.log("denarius balance: %d - %d", dEtherFormat, dBalance);
+
+        vm.stopBroadcast();
+    }
+}
+
 contract InfoBalances is Script {
     function run() external {
         vm.startBroadcast();
@@ -165,12 +188,16 @@ contract InfoBalances is Script {
         // vat = SampleVat(registry.lookUp("SampleVat"));
         // daiJoin = DaiJoin(registry.lookUp("DaiJoin"));
         CenturionDai dai = CenturionDai(registry.lookUp("CenturionDai"));
+        Denarius denarius = Denarius(registry.lookUp("Denarius"));
+
         uint256 cBalance = dai.balanceOf(msg.sender);
         uint256 cEtherFormat = cBalance / (1 * 10**18);
         console2.log("Dai balance: %d - %d", cEtherFormat, cBalance);
-        Denarius denarius = Denarius(registry.lookUp("Denarius"));
+
         uint256 dBalance = denarius.balanceOf(msg.sender);
         uint256 dEtherFormat = dBalance / (1 * 10**18);
         console2.log("denarius balance: %d - %d", dEtherFormat, dBalance);
+
+        vm.stopBroadcast();
     }
 }
