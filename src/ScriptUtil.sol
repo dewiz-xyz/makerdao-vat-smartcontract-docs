@@ -5,7 +5,7 @@ import {Vm} from "forge-std/Vm.sol";
 import {Registry} from "./Registry.sol";
 
 library Numbers {
-    function numDigits(int256 number) public returns (uint8) {
+    function numDigits(int256 number) public pure returns (uint8) {
         uint8 digits = 0;
         //if (number < 0) digits = 1; // enable this line if '-' counts as a digit
         while (number != 0) {
@@ -13,6 +13,14 @@ library Numbers {
             digits++;
         }
         return digits;
+    }
+
+    function convertToInteger(
+        uint256 value,
+        uint256 decimals,
+        uint256 numDigitsBelowOneAndPositive
+    ) public pure returns (uint256) {
+        return value * 10**(decimals - numDigitsBelowOneAndPositive);
     }
 }
 

@@ -77,7 +77,7 @@ contract Setup is Script {
         vat.file("Line", 1_000_000 * 10**45);
         vat.file("Denarius-A", "line", 1_000_000 * 10**45);
         // vat.file("Denarius-A", "spot", 1 * 10**27);
-        vat.file("Denarius-A", "spot", price * 10**(_RAYDECIMALS - numDigitsBelowOneAndPositive)); //Actual price of MATIC 2023-08-16 - 0.616 USD
+        vat.file("Denarius-A", "spot", Numbers.convertToInteger(price, _RAYDECIMALS, numDigitsBelowOneAndPositive)); //Actual price of MATIC 2023-08-16 - 0.616 USD
     }
 }
 
@@ -148,5 +148,29 @@ contract Borrow is Script {
         console2.log("After - I am %s and my balance in Dai: %s", msg.sender, dai.balanceOf(msg.sender));
 
         vm.stopBroadcast();
+    }
+}
+
+contract InfoBalances is Script {
+    function run() external {
+        vm.startBroadcast();
+
+        (bool success, address registryAddress) = RegistryUtil.getRegistryAddress();
+        if (!success) {
+            console2.log("Error creating new Registry instance!");
+            revert();
+        }
+        Registry registry = Registry(registryAddress);
+        // gemJoin = GemJoin(registry.lookUp("GemJoin"));
+        // vat = SampleVat(registry.lookUp("SampleVat"));
+        // daiJoin = DaiJoin(registry.lookUp("DaiJoin"));
+        CenturionDai dai = CenturionDai(registry.lookUp("CenturionDai"));
+        uint256 cBalance = dai.balanceOf(msg.sender);
+        uint256 cEtherFormat = cBalance / (1 * 10**18);
+        console2.log("Dai balance: %d - %d", cEtherFormat, cBalance);
+        Denarius denarius = Denarius(registry.lookUp("Denarius"));
+        uint256 dBalance = denarius.balanceOf(msg.sender);
+        uint256 dEtherFormat = dBalance / (1 * 10**18);
+        console2.log("denarius balance: %d - %d", dEtherFormat, dBalance);
     }
 }
