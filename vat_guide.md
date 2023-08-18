@@ -38,7 +38,7 @@ Deploy an ERC-20 that you control
 Example:
 
 ```bash
-./scripts/forge-script.sh ./src/Cent.s.sol:CenturionDaiDeploy --fork-url=$RPC_URL --broadcast -vvvv
+<rome-dao-path>./scripts/forge-script.sh ./src/Cent.s.sol:CenturionDaiDeploy --fork-url=$RPC_URL --broadcast -vvvv
 ```
 
 ### Deploy `Vat` from Rome DAO
@@ -48,7 +48,7 @@ Deploy `Vat` from `vat.sol`
 Example:
 
 ```bash
-./scripts/forge-script.sh ./src/SampleVat.s.sol:SampleVatDeploy --fork-url=$RPC_URL --broadcast -vvvv
+<rome-dao-path>./scripts/forge-script.sh ./src/SampleVat.s.sol:SampleVatDeploy --fork-url=$RPC_URL --broadcast -vvvv
 ```
 
 ### Deploy your ERC-20 token `$DENARIUS`
@@ -61,7 +61,7 @@ Example:
 ./scripts/forge-script.sh ./src/Denarius.s.sol:DenariusDeploy --fork-url=$RPC_URL --broadcast -vvvv
 ```
 
-### Deploy `GemJoin`
+### Deploy `GemJoin` from Rome DAO
 
 Deploy a `GemJoin` contract from `join.sol` and allow it to spend your collateral
 
@@ -79,10 +79,10 @@ Where:
 Example:
 
 ```bash
-./scripts/forge-script.sh ./src/GemJoin.s.sol:GemJoinDeploy --fork-url=$RPC_URL --broadcast -vvvv
+<rome-dao-path>./scripts/forge-script.sh ./src/GemJoin.s.sol:GemJoinDeploy --fork-url=$RPC_URL --broadcast -vvvv
 ```
 
-### Deploy `DaiJoin`
+### Deploy `DaiJoin` from Rome DAO
 
 Deploy a `DaiJoin` contract from `join.sol`
 
@@ -98,10 +98,10 @@ Where:
 Example:
 
 ```bash
-./scripts/forge-script.sh ./src/DaiJoin.s.sol:DaiJoinDeploy --fork-url=$RPC_URL --broadcast -vvvv
+<rome-dao-path>./scripts/forge-script.sh ./src/DaiJoin.s.sol:DaiJoinDeploy --fork-url=$RPC_URL --broadcast -vvvv
 ```
 
-Then:
+Then, using Rome DAO scripts:
 
 1. Allow `DaiJoin` to **mint** `$DAI`
 2. Allow `DaiJoin` to **burn** `$DAI`
@@ -111,10 +111,10 @@ Then:
 Example:
 
 ```bash
-./scripts/forge-script.sh ./src/DaiJoin.s.sol:DaiJoinReceiveAllowance --fork-url=$RPC_URL --broadcast -vvvv
+<rome-dao-path>./scripts/forge-script.sh ./src/DaiJoin.s.sol:DaiJoinReceiveAllowance --fork-url=$RPC_URL --broadcast -vvvv
 ```
 
-### `Vat` initialization
+### `Vat` initialization from Rome DAO
 
 Authorize the contracts on the `Vat`, initialize it, set the global debt ceiling, set collateral debt ceiling, and set collateral price
 
@@ -132,7 +132,7 @@ vat.file('Denarius-A', 'spot', 1 * 10**27) // RAY: 27 decimals
 Example:
 
 ```bash
-./scripts/forge-script.sh ./src/SampleVat.s.sol:SampleVatInitialize --fork-url=$RPC_URL --broadcast -vvvv
+<rome-dao-path>./scripts/forge-script.sh ./src/vat.s.sol:VatInitialize --fork-url=$RPC_URL --broadcast -vvvv
 ```
 
 ### Below explanation about the debt/collateral definitions in `VAT`
@@ -191,9 +191,24 @@ This will add collateral to the system, but it will remain **unemcumbered** (not
 daiJoin.exit(<your_wallet>, <amount>); // <amount> with 10**18 precision
 ```
 
-### Repay your loan to get `$DENARIUS` back
+Example:
 
-1. Add your `$DAI` to the protocol by calling `DaiJoin.join()`:
+```bash
+./scripts/forge-script.sh ./src/Operation.s.sol:Borrow --fork-url=$RPC_URL --broadcast -vvvv
+```
+
+### Information about your positions in `Dai`, `$DENARIUS` and within the Rome DAO (simulating Maker) protocol
+
+To know what is your actual positions in `Dai`, `$DENARIUS` and within the Rome DAO (simulating Maker) protocol there is a helper script that gives you
+these information reading the different smart contracts of the Protocol. Just call:
+
+```bash
+./scripts/forge-script.sh ./src/Operation.s.sol:InfoBalances --fork-url=$RPC_URL --broadcast -vvvv
+```
+
+## Repay your loan to get `$DENARIUS` back
+
+### Add your `$DAI` to the protocol by calling `DaiJoin.join()`:
 
 ```solidity
 daiJoin.join(<your_addr>, <amount>); // <amount> with 10**18 precision
