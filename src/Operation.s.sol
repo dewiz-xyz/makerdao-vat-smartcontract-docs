@@ -88,6 +88,7 @@ contract Borrow is Script {
     }
 }
 
+// ./scripts/forge-script.sh ./src/Operation.s.sol:PayBack --fork-url=$RPC_URL --broadcast -vvvv
 contract PayBack is Script {
     uint256 internal constant _VALUE_TO_PAYBACK = 2 * 10**18;
 
@@ -127,6 +128,7 @@ contract PayBack is Script {
     }
 }
 
+// ./scripts/forge-script.sh ./src/Operation.s.sol:InfoBalances --fork-url=$RPC_URL --broadcast -vvvv
 contract InfoBalances is Script {
     function run() external {
         vm.startBroadcast();
