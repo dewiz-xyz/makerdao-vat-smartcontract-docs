@@ -1,12 +1,8 @@
-# Maker DAO VAT Smart Contract
+# Understanding Maker DAO VAT Smart Contract
 
-Project to explain Maker DAO VAT Smart Contract and how to setup and interact with it.
+Project to explain what is, how to setup, and interact with Maker DAO VAT Smart Contract.
 
-## Minimal `Vat` setup
-
-In order to run this project to understand the Maker DAO VAT Smart Contract and its operation you need to perform the setup below. To reproduce an environment
-very close to what we have in mainnet the original contracts Maker DAO VAT contracts are deploying using the project
-[Rome DAO](https://github.com/dewiz-xyz/rome-dao).
+## Enviroment Setup
 
 ### Setup localchain using GETH
 
@@ -27,33 +23,43 @@ export FOUNDRY_ETH_PASSWORD_FILE=$ETH_PASSWORD
 
 ### Setup auxiliary tooling
 
-Make sure you have node, shfmt and foundry installed.
+Make sure you have **node.js**, **shfmt** and **foundry** installed.
 
 ## Deploying artifacts
 
+In order to run this project to understand the Maker DAO VAT Smart Contract and its operations you need to deploy it and other Smart Contracts configure them.
+Below are for instructions deployment and example scripts that will help you to do it and most importantly to help you to understand why these artifacts
+are needed.
+
+Due changes in Solidity arithmetics from version 0.5.x to 0.8.x the Maker DAO's DSS Smart Contracts need to be compiled using 0.6.x version to avoid overflow
+errors when `frob` method is called - you will see more details about it below. So, we split this example project in two. `Rome DAO` simulates Maker DAO very
+close to what we have in mainnet and this project simulates an user operating it using the Solidity version 0.8.x
+
+Hence, when you see `from Rome DAO` instruction below please use scripts saved in `Rome DAO` project. Its URL is https://github.com/dewiz-xyz/rome-dao
+
 ### Deploy your own "Dai" token `$DAI` from Rome DAO
 
-Deploy an ERC-20 that you control
+Deploy an ERC-20 to simulate `DAI` tokens. It will be managed by the protocol, Rome DAO, that simulates Maker DAO mechanisms.
 
 Example:
 
 ```bash
-<rome-dao-path>./scripts/forge-script.sh ./src/Cent.s.sol:CenturionDaiDeploy --fork-url=$RPC_URL --broadcast -vvvv
+<rome-dao-path>./scripts/forge-script.sh ./src/dai.s.sol:DaiDeploy --fork-url=$RPC_URL --broadcast -vvvv
 ```
 
 ### Deploy `Vat` from Rome DAO
 
-Deploy `Vat` from `vat.sol`
+Deploy `Vat` from `vat.sol`. VAT is the main compoment of Maker DAO. It manages the DAI supply versus debts tokenized in different collaterals.
 
 Example:
 
 ```bash
-<rome-dao-path>./scripts/forge-script.sh ./src/SampleVat.s.sol:SampleVatDeploy --fork-url=$RPC_URL --broadcast -vvvv
+<rome-dao-path>./scripts/forge-script.sh ./src/vat.s.sol:VatDeploy --fork-url=$RPC_URL --broadcast -vvvv
 ```
 
 ### Deploy your ERC-20 token `$DENARIUS`
 
-Deploy an ERC-20 that you control
+Deploy an ERC-20 that simulates a tokenized asset you want to be a collateral for Rome DAO's `DAI`.
 
 Example:
 
@@ -63,7 +69,8 @@ Example:
 
 ### Deploy `GemJoin` from Rome DAO
 
-Deploy a `GemJoin` contract from `join.sol` and allow it to spend your collateral
+Deploy a `GemJoin` contract from `join.sol` and allow it to spend your collateral. `GemJoin` holds your collateral and `Vat` Smart Contract use it to manage
+them.
 
 ```solidity
 GemJoin(address vat, bytes32 ilk, address gem);
@@ -84,7 +91,7 @@ Example:
 
 ### Deploy `DaiJoin` from Rome DAO
 
-Deploy a `DaiJoin` contract from `join.sol`
+Deploy a `DaiJoin` contract from `join.sol`. `DaiJoin` holds `DAI` and `Vat` Smart Contract use it to manage them.
 
 ```solidity
 DaiJoin(address vat, address dai)
@@ -101,7 +108,7 @@ Example:
 <rome-dao-path>./scripts/forge-script.sh ./src/DaiJoin.s.sol:DaiJoinDeploy --fork-url=$RPC_URL --broadcast -vvvv
 ```
 
-Then, using Rome DAO scripts:
+Then, using `Rome DAO` scripts for:
 
 1. Allow `DaiJoin` to **mint** `$DAI`
 2. Allow `DaiJoin` to **burn** `$DAI`
@@ -116,9 +123,9 @@ Example:
 
 ### `Vat` initialization from Rome DAO
 
-Authorize the contracts on the `Vat`, initialize it, set the global debt ceiling, set collateral debt ceiling, and set collateral price
+`Vat` needs to rely on (authorize) `GemJoin` and `DaiJoin` Smart Contracts, initialize it. Also it is needed to set the global debt ceiling, set collateral debt ceiling, and set the collateral price.
 
-`rely` on both join contracts
+See the sample code below:
 
 ```solidity
 vat.rely(<gem_join_addr>);
@@ -135,7 +142,7 @@ Example:
 <rome-dao-path>./scripts/forge-script.sh ./src/vat.s.sol:VatInitialize --fork-url=$RPC_URL --broadcast -vvvv
 ```
 
-### Below explanation about the debt/collateral definitions in `VAT`
+### Detailed explanation about the debt/collateral definitions in `VAT`
 
 #### Set the global debt ceiling using `Line` (with capital `L`)
 
@@ -144,6 +151,9 @@ vat.file('Line', 1_000_000 * 10**45); // RAD: 45 decimals
 ```
 
 #### Set collateral debt ceiling `line` (with lower `l`)
+
+Pay attention that now you define a name for your collateral, in our case: `Denarius-A`. The collateral data is stored within a struct called `ilk`. There is a
+mapping called `ilks` that allow the `Vat` supports several collaterals with different rate configurations.
 
 ```solidity
 vat.file('Denarius-A', 'line', 1_000_000 * 10**45); // RAD: 45 decimals
@@ -181,11 +191,13 @@ This will add collateral to the system, but it will remain **unemcumbered** (not
 ```
 
 - `dink`: how much collateral to lock(+ add ) or unlock(- sub) within `Vat`. It means the collateral is now **encumbered** (locked) into the system.
-- `dart`: how much **normalized debt** to add(+)/remove(-). Remember that `debt = ilk.rate * urn.art` . To get the value for `dart`, divide the desired amount
+- `dart`: how much **normalized debt** to add(+)/remove(-). Remembering `debt = ilk.rate * urn.art` . To get the value for `dart`, divide the desired amount
   by `ilk.rate` (this is a floating point division, which can be tricky). See the [RwaUrn](https://github.com/makerdao/rwa-toolkit/blob/8d30ed2cb657641253d45b57c894613e26b4ae1b/src/urns/RwaUrn.sol#L156-L178) component to understand how it can be done
-- Recommendation: respect `dink = dart*2` when calling `vat.frob` for drawing to make the collateralization rate in 200%.
+- Recommendation: to leave `dink = dart*2` when calling `vat.frob` for drawing to make the collateralization rate in 200%.
 
 ### Get ERC-20 `$DAI`
+
+Now it is a great time. Calling the method below after `vat.frob` you are allowed to receive `$DAI` in your wallet.
 
 ```solidity
 daiJoin.exit(<your_wallet>, <amount>); // <amount> with 10**18 precision
@@ -197,7 +209,7 @@ Example:
 ./scripts/forge-script.sh ./src/Operation.s.sol:Borrow --fork-url=$RPC_URL --broadcast -vvvv
 ```
 
-### Information about your positions in `Dai`, `$DENARIUS` and within the Rome DAO (simulating Maker) protocol
+### Status Information about your Positions in `Dai`, `$DENARIUS` and within the Rome DAO (simulating Maker) protocol
 
 To know what is your actual positions in `Dai`, `$DENARIUS` and within the Rome DAO (simulating Maker) protocol there is a helper script that gives you
 these information reading the different smart contracts of the Protocol. Just call:
@@ -216,11 +228,11 @@ daiJoin.join(<your_addr>, <amount>); // <amount> with 10**18 precision
 
 This will burn ERC-20 `$DAI` and add it to `<your_addr>` internal balance on the `Vat`.
 
-2. Repay internal `dai` in the `Vat` using `frob()`:
+### Repay internal `dai` in the `Vat` using `frob()`:
 
 ```solidity
 vat.frob(
-      'CENT-A', // ilk
+      'Denarius-A', // ilk
       <your_wallet>,
       <your_wallet>,
       <your_wallet>, // To keep it simple, use your address for both `u`, `v` and `w`
@@ -233,7 +245,18 @@ vat.frob(
 - `dart`: how much **normalized debt** to remove. **MUST BE NEGATIVE**. Remember that `debt = ilk.rate * urn.art` . To get the value for `dart`, divide the desired amount by `ilk.rate` (this is a floating point division, which can be tricky)
 - See the [RwaUrn](https://github.com/makerdao/rwa-toolkit/blob/8d30ed2cb657641253d45b57c894613e26b4ae1b/src/urns/RwaUrn.sol#L156-L178) component to understand how it can be done
 
-4. Get your `$CENT` back:
-   ```solidity
-   gemJoin.exit(<your_wallet>, <amount>); // <amount> with 10**18 precision
-   ```
+### Get your `$DENARIUS` back:
+
+```solidity
+gemJoin.exit(<your_wallet>, <amount>); // <amount> with 10**18 precision
+```
+
+Example:
+
+```bash
+./scripts/forge-script.sh ./src/Operation.s.sol:PayBack --fork-url=$RPC_URL --broadcast -vvvv
+```
+
+## Summary
+
+All the steps above have described how Maker DAO protocol manages DAI supply and its collaterals.
