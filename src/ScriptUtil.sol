@@ -24,15 +24,15 @@ library Numbers {
     }
 
     function add(uint256 x, uint256 y) internal pure returns (uint256 z) {
-        require((z = x + y) >= x);
+        require((z = x + y) >= x, "add error");
     }
 
     function sub(uint256 x, uint256 y) internal pure returns (uint256 z) {
-        require((z = x - y) <= x);
+        require((z = x - y) <= x, "sub error");
     }
 
     function mul(uint256 x, uint256 y) internal pure returns (uint256 z) {
-        require(y == 0 || (z = x * y) / y == x);
+        require(y == 0 || (z = x * y) / y == x, "mul error");
     }
 
     function divup(uint256 x, uint256 y) internal pure returns (uint256 z) {
@@ -40,20 +40,20 @@ library Numbers {
     }
 
     function ray() public pure returns (uint256) {
-        return 10**27;
+        return 10**rayDecimals();
+    }
+
+    function rayDecimals() public pure returns (uint256) {
+        return 27;
     }
 }
 
 library RegistryUtil {
     Vm private constant vm = Vm(address(uint160(uint256(keccak256("hevm cheat code")))));
 
-    function getRegistryAddress() public view returns (bool, address) {
-        string memory tokenAddressStr = vm.readFile("./metadata/registry-address.txt");
-        address tokenAddress = address(StringToAddress.convert(tokenAddressStr));
-        if (tokenAddress != address(0)) {
-            return (true, tokenAddress);
-        }
-        return (false, address(0));
+    function getRegistryAddress() public pure returns (bool, address) {
+        address registryAddress = address(0x70607478aFC46410fD4401F3847a4848e661e457);
+        return (true, registryAddress);
     }
 
     function getContractAddress(string calldata _contractName) public view returns (bool, address) {
@@ -61,7 +61,6 @@ library RegistryUtil {
         if (!success) {
             return (false, address(0));
         }
-        // address registryAddress = address(0x1b0c3963065470F6075D8a5A5F990aa373Cb73f8);
         Registry registry = Registry(registryAddress);
         address contractAddress = registry.lookUp(_contractName);
         if (contractAddress == address(0)) {
@@ -76,7 +75,6 @@ library RegistryUtil {
             return false;
         }
         vm.startBroadcast();
-        // address registryAddress = address(0x1b0c3963065470F6075D8a5A5F990aa373Cb73f8);
         Registry registry = Registry(registryAddress);
         bytes32 contractHashName = sha256(bytes(_contractName));
         registry.addContract(contractHashName, _contractAddress);

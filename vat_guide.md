@@ -4,7 +4,9 @@ Project to explain Maker DAO VAT Smart Contract and how to setup and interact wi
 
 ## Minimal `Vat` setup
 
-In order to run this project to understand the Maker DAO VAT Smart Contract and its operation you need to perform the setup below.
+In order to run this project to understand the Maker DAO VAT Smart Contract and its operation you need to perform the setup below. To reproduce an environment
+very close to what we have in mainnet the original contracts Maker DAO VAT contracts are deploying using the project
+[Rome DAO](https://github.com/dewiz-xyz/rome-dao).
 
 ### Setup localchain using GETH
 
@@ -29,7 +31,17 @@ Make sure you have node, shfmt and foundry installed.
 
 ## Deploying artifacts
 
-### Deploy `Vat`
+### Deploy your own "Dai" token `$DAI` from Rome DAO
+
+Deploy an ERC-20 that you control
+
+Example:
+
+```bash
+./scripts/forge-script.sh ./src/Cent.s.sol:CenturionDaiDeploy --fork-url=$RPC_URL --broadcast -vvvv
+```
+
+### Deploy `Vat` from Rome DAO
 
 Deploy `Vat` from `vat.sol`
 
@@ -68,16 +80,6 @@ Example:
 
 ```bash
 ./scripts/forge-script.sh ./src/GemJoin.s.sol:GemJoinDeploy --fork-url=$RPC_URL --broadcast -vvvv
-```
-
-### Deploy your own "Dai" token `$DAI`
-
-Deploy an ERC-20 that you control
-
-Example:
-
-```bash
-./scripts/forge-script.sh ./src/Cent.s.sol:CenturionDaiDeploy --fork-url=$RPC_URL --broadcast -vvvv
 ```
 
 ### Deploy `DaiJoin`
