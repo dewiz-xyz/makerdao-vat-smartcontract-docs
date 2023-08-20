@@ -7,7 +7,7 @@ Project to explain what is, how to setup, and interact with Maker DAO VAT Smart 
 ### Setup localchain using GETH
 
 ```bash
-geth --datadir ~/.temp/ --dev --http --http.api web3,eth,debug,net --http.corsdomain "*" --http.vhosts "*" --http.addr 127.0.0.1 --ws --ws.api eth,net,debug,web3 --ws.addr 127.0.0.1 --ws.origins "*" --graphql --graphql.corsdomain "*" --graphql.vhosts "*" --vmdebug
+geth --datadir ~/temp/ --dev --http --http.api web3,eth,rpc,debug,net,txpool,admin --http.corsdomain "*" --http.vhosts "*" --http.addr 127.0.0.1 --ws --ws.api eth,net,debug,web3 --ws.addr 127.0.0.1 --ws.origins "*" --graphql --graphql.corsdomain "*" --graphql.vhosts "*" --vmdebug
 ```
 
 ### Setup local environment variables
