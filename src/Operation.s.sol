@@ -9,32 +9,6 @@ import {Vat} from "dss/vat.sol";
 import {Dai} from "dss/dai.sol";
 import {GemJoin, DaiJoin} from "dss/join.sol";
 
-//  ./scripts/forge-script.sh ./src/Operation.s.sol:Setup --fork-url=$RPC_URL --broadcast -vvvv
-// contract Setup is Script {
-//     Registry public registry;
-//     Denarius public denarius;
-
-//     uint256 public constant _RAY = 10 ** 27;
-//     uint256 public constant _RAYDECIMALS = 27;
-
-//     function run() external {
-//         vm.startBroadcast();
-//         _setRegistry();
-//         _deployCollateral();
-//         vm.stopBroadcast();
-//     }
-
-//     function _setRegistry() internal {
-//         (, address registryAddress) = RegistryUtil.getRegistryAddress();
-//         registry = Registry(registryAddress);
-//     }
-
-//     function _deployCollateral() internal {
-//         denarius = new Denarius();
-//         registry.setContractAddress("Denarius", address(denarius));
-//     }
-// }
-
 //  ./scripts/forge-script.sh ./src/Operation.s.sol:Borrow --fork-url=$RPC_URL --broadcast -vvvv
 contract Borrow is Script {
     Registry public registry;
