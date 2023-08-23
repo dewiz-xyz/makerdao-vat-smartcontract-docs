@@ -46,6 +46,12 @@ Wrapper around `forge`/`cast` which figure out wallet and password automatically
 - `scripts/forge-verify.sh`: Verifies a deployed contract. Accepts the same options as [`forge verify-contract`](https://book.getfoundry.sh/reference/forge/forge-verify-contract.html)
 - `scripts/cast-send.sh`: Signs and publish a transaction. Accepts the same options as [`cast send`](https://book.getfoundry.sh/reference/cast/cast-send.html)
 
+## Setup Process
+
+The image bellow show us in a big picture the VAT setup
+
+![VAT Setup Process](images/vat-setup.png "VAT Setup Process")
+
 ## Deploying artifacts
 
 In order to run this project to understand the Maker DAO VAT Smart Contract and its operations you need to deploy it and other Smart Contracts configure them.
