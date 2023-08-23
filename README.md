@@ -192,6 +192,10 @@ In the above example, it makes `$DENARIUS` price equals `DAI` price ( 1 to 1 ).
 
 ## Borrow `$DAI` using `$DENARIUS`
 
+The image bellow describe in a spreadsheet with numbers the operation we are going to do:
+
+![Borrow Operation Financial Results](images/borrow-operation.png "Borrow Operation Financial Results")
+
 ### Add your `$DENARIUS` to the protocol by calling `GemJoin.join()`
 
 ```solidity
