@@ -202,6 +202,10 @@ The image bellow describe in a spreadsheet with numbers the operation we are goi
 
 ![Borrow Operation Financial Results](images/borrow-operation.png "Borrow Operation Financial Results")
 
+This other image describe the flow performed in Solidity code to borrow DAI from the DAO:
+
+![Borrow Operation Solidity Flow](images/borrow-flow-operation.png "Borrow Operation Solidity Flow")
+
 ### Add your `$DENARIUS` to the protocol by calling `GemJoin.join()`
 
 ```solidity
@@ -250,6 +254,10 @@ these information reading the different smart contracts of the Protocol. Just ca
 ```
 
 ## Repay your loan to get `$DENARIUS` back
+
+This image below describe the flow performed in Solidity code to payback DAI to the DAO:
+
+![Payback Operation Solidity Flow](images/payback-flow-operation.png "Payback Operation Solidity Flow")
 
 ### Add your `$DAI` to the protocol by calling `DaiJoin.join()`:
 
