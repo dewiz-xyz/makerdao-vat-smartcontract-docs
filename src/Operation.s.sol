@@ -79,6 +79,7 @@ contract PayBack is Script {
         Dai dai = Dai(registry.lookUp("Dai"));
         Denarius denarius = Denarius(registry.lookUp("Denarius"));
         DaiJoin daiJoin = DaiJoin(registry.lookUp("DaiJoin"));
+        GemJoin gemJoin = GemJoin(registry.lookUp("GemJoin"));
 
         daiJoin.join(msg.sender, _VALUE_TO_PAYBACK);
         (, uint256 rate, , , ) = vat.ilks("Denarius-A");
@@ -87,6 +88,8 @@ contract PayBack is Script {
         require(dart <= 2**255 && dart <= 2**255, "RwaUrn/overflow");
 
         vat.frob("Denarius-A", msg.sender, msg.sender, msg.sender, -1, -1);
+
+        gemJoin.exit(msg.sender, _VALUE_TO_PAYBACK);
 
         console2.log("dink: %d - dart: %d", dink, dart);
 
