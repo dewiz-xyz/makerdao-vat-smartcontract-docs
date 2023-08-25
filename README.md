@@ -2,7 +2,10 @@
 
 Project to explain what is, how to setup, and interact with Maker DAO VAT Smart Contract.
 
-The example projects are based on Foundry Forge Dewiz Template.
+This document is based on [DAI Glossary](https://github.com/makerdao/dss/wiki/Glossary) and
+[Maker Protocol 101](https://drive.google.com/file/d/1VtGV8Ct2iBO8WjWsjFYLg5DnwlGmetSp/view?pli=1)
+
+The example projects are based on Foundry Forge Dewiz Template and Maker DAO DSS codebase.
 
 ## Enviroment Setup
 
