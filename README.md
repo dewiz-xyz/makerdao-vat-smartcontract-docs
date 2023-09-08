@@ -244,7 +244,7 @@ daiJoin.exit(<your_wallet>, <amount>); // <amount> with 10**18 precision
 Example:
 
 ```bash
-./scripts/forge-script.sh ./src/Operation.s.sol:Borrow --fork-url=$RPC_URL --broadcast -vvvv
+./scripts/forge-script.sh ./src/Borrow.s.sol:BorrowDenariusA --fork-url=$RPC_URL --broadcast -vvvv
 ```
 
 ### Status Information about your Positions in `Dai`, `$DENARIUS` and within the Rome DAO (simulating Maker) protocol
@@ -296,7 +296,7 @@ gemJoin.exit(<your_wallet>, <amount>); // <amount> with 10**18 precision
 Example:
 
 ```bash
-./scripts/forge-script.sh ./src/Operation.s.sol:PayBack --fork-url=$RPC_URL --broadcast -vvvv
+./scripts/forge-script.sh ./src/Payback.s.sol:PayBackDenariusA --fork-url=$RPC_URL --broadcast -vvvv
 ```
 
 ## Summary
