@@ -30,5 +30,8 @@ contract RegistryOnChainTest is Script {
         }
         Registry registry = Registry(registryAddress);
         console2.log("Num items: %s", success, registry.numItemsRecorded());
+        console2.log("Vat address: %s", registry.lookUp("Vat"));
+        console2.log("GemJoin address: %s", registry.lookUp("GemJoin"));
+        console2.log("GemJoin-B address: %s", registry.lookUp("GemJoin-B"));
     }
 }
